@@ -6,13 +6,14 @@ ECE 4180 - Spring 2023
 Creators: Rony Stephan, Andrew Wang
 
 ## Table of Contents
-1. [Motivation](#Project-Motivation)
+1. [Project Motivation](#Project-Motivation)
 2. [Final Showcase](#Final-Showcase)
 3. [Electronic Components](#Electronic-Components)
 4. [Software Flowchart](#Software-Flowchart)
 5. [Pin Connections](#Pin-Connections)
-6.  [System Schematic](#System-Schematic)
-7. [Future Improvements](#Future-Improvements)
+6. [System Schematic](#System-Schematic)
+7. [Game Operation](#Game-Operation)
+8. [Future Improvements](#Future-Improvements)
 
 
 
@@ -21,7 +22,7 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 
 
 ## Final Showcase
-
+[![MonkeyType MBED](https://img.youtube.com/vi/41Kbnx_lNgI/hqdefault.jpg)](https://youtu.be/41Kbnx_lNgI)
 
 ## Electronic Components
  - uLCD-144-g2: https://www.sparkfun.com/products/11377
