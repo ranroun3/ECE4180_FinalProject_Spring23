@@ -48,7 +48,7 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 
 **MBED and PS2 Keyboard**
 
-|uLCD|Mbed|
+|Mbed|PS2|
 |--- | ---|
 | 5V | 5V |
 | GND| GND|
@@ -69,8 +69,7 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 
 
 ## System Schematic
-
-//todo
+<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Schematic.png" width="476" height="685">
 
 ## Game Operation
 Upon booting up the game, our user is presented with a list of words to type, alongside a 30-second timer. These words are generated from a list of the 500 most commonly used words in the English Language. 
