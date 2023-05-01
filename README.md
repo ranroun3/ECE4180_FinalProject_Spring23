@@ -32,7 +32,7 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 
 
 ## Software Flowchart
-<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Flowchart.png" width="476" height="685">
+<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Flowchart.png" width="860" height="585">
 
 ## Pin Connections
 **MBED and uLCD display**
