@@ -9,8 +9,9 @@ Creators: Rony Stephan, Andrew Wang
 1. [Motivation](#Project-Motivation)
 2. [Final Showcase](#Final-Showcase)
 3. [Electronic Components](#Electronic-Components)
-4. [System Schematic](#System-Schematic)
-5. [Future Improvements](#Future-Improvements)
+4. [Software Flowchart](#Software-Flowchart)
+5. [System Schematic](#System-Schematic)
+6. [Future Improvements](#Future-Improvements)
 
 
 
@@ -23,6 +24,11 @@ Creators: Rony Stephan, Andrew Wang
  - Class D Audio Amp: https://www.sparkfun.com/products/11044
  - Speaker: https://www.sparkfun.com/products/11089
  - PS2 Keyboard: https://www.amazon.com/MCSaite-Computer-Keyboard-Stands-Waterproof/dp/B097ZLWS7S/ref=sr_1_3?keywords=Ps%2F2+Keyboard&qid=1682912778&sr=8-3
+
+
+## Software Flowchart
+<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Flowchart.png" width="476" height="685">
+
 
 **MBED and uLCD display**
 |uLCD|Mbed|
