@@ -32,7 +32,7 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 
 
 ## Software Flowchart
-<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Flowchart.png" width="860" height="585">
+<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Flowchart.png" width="476" height="685">
 
 ## Pin Connections
 **MBED and uLCD display**
@@ -46,15 +46,16 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 
 
 
-**MBED and PS2 Keyboard**
-
+**MBED and PS/2 Keyboard**
+Note: PS/2 connector pin wiring begins at the top right pin, which is p1, travels clockwise ends at the top left pin, which is p6
 |Mbed|PS2|
 |--- | ---|
-| 5V | 5V |
-| GND| GND|
-| TX | p9 |
-| RX | p10|
-| RST| p11|
+|    | p1 |
+| 5V | p2 |
+|    | p3 |
+| p5 | p4 |
+| GND| p5 |
+| p6 | p6 |
 
 **MBED, TPA2005D1 Amp, and Speaker**
 |MBED|TPA|  Speaker |
@@ -65,11 +66,10 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 | GND| in-|         |
 |    |out+|    +    |
 |    |out-|    -   |
-//todo
 
 
 ## System Schematic
-<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Schematic.png" width="476" height="685">
+<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Schematic.png" width="860" height="85">
 
 ## Game Operation
 Upon booting up the game, our user is presented with a list of words to type, alongside a 30-second timer. These words are generated from a list of the 500 most commonly used words in the English Language. 
