@@ -56,7 +56,7 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 | RX | p10|
 | RST| p11|
 
-**MBED, TPA2005D1 Amp, and Speaker **
+**MBED, TPA2005D1 Amp, and Speaker**
 |MBED|TPA|  Speaker |
 |--- | ---| ---     |
 | 5V |PWR+|         |
@@ -65,7 +65,7 @@ For this project, we really enjoyed learning about the ability of the MBED to em
 | GND| in-|         |
 |    |out+|    +    |
 |    |out-|    -   |
-
+//todo
 
 
 ## System Schematic
