@@ -1,0 +1,7 @@
+ROOT=.
+DEVICE_ID[/home/studio/workspace/Lab 3 checkoff 5(working)]=10107e82e7e175147eb2c9a32c5ad57098a9
+DEVICE_TYPE[/home/studio/workspace/Lab 3 checkoff 5(working)]=connected
+DEVICE_ID[/home/studio/workspace/final working rtos 2]=10107e82e7e175147eb2c9a32c5ad57098a9
+DEVICE_TYPE[/home/studio/workspace/final working rtos 2]=connected
+TARGET=LPC1768
+TARGET_CODE=1010

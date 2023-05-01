@@ -1,0 +1,13 @@
+data/PS2MS.h.i
+data/PS2Mouse.cpp.i
+data/PS2KB.h.i
+data/PS2MS_INIT.h.i
+data/PS2KB_INIT.h.i
+data/PS2MS.cpp.i
+data/PS2.h.i
+data/PS2Keyboard.cpp.i
+data/PS2KB_INIT.cpp.i
+data/PS2MS_INIT.cpp.i
+data/PS2KB.cpp.i
+data/PS2Keyboard.h.i
+data/PS2Mouse.h.i
