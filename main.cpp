@@ -10,34 +10,29 @@
 #define NUM_WORDS 429
 #define MAX_WORD_LEN 15
 #define STRING_LEN 75
-
 #define INITIAL_STR_LEN 1000 // Initial length of the running user string
-#define MAX_STR_LEN 1000     // Maximum length of the running user string
 
 PS2Keyboard ps2kb(p6, p5); // CLK, DAT
 Serial pc(USBTX, USBRX);
 uLCD_4DGL uLCD(p9, p10, p11);
 AnalogIn noise(p20);
 PwmOut speaker(p25);
+Timeout delay;
 Mutex lcd_mutex;
 
-// variables
-Timeout delay;
+// variable declaration
 bool gameActive = true;
 int timeCount = 0;
-int isCorrect[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int correctPresses = 0;
 int incorrectPresses = 0;
 int currentIndex = 0;
 int word_count = 0;
+int userPos = 0;
 double currentWPM = 0.0;
 double currentAccuracy = 100.0;
-int userPos = 0;
-char user_input; // Initialize the user input buffer as a single character
+char user_input;                // Initialize the user input buffer as a single character
+char *random_string = (char *)malloc(sizeof(char) * (NUM_WORDS * (MAX_WORD_LEN + 1)));        //Allocate space for word sequence
 
-char *random_string =
-    (char *)malloc(sizeof(char) * (NUM_WORDS * (MAX_WORD_LEN + 1)));
-// //parsing charmap
 char charMap[] = {
     '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
     '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', 'q',  '\0', '\0',
@@ -47,6 +42,7 @@ char charMap[] = {
     'u',  '\0', '\0', '\0', '\0', '\0', 'k',  'i',  'o',  '\0', '\0', '\0',
     '\0', '\0', '\0', 'l',  '\0', 'p',  '\0', '\0', '\0', '\0', '\0', '\0',
     '\0', '\0', '\0', '\0', '\0', '\0', '\n'};
+
 const char *word_bank[NUM_WORDS] = {
     "time",        "year",         "people",      "way",
     "day",         "man",          "thing",       "woman",
@@ -157,220 +153,175 @@ const char *word_bank[NUM_WORDS] = {
     "store",       "summer",       "train",       "sleep",
     "prove"};
 
-// thread to count down from 30 seconds and display on the screen
-void speakerOff() { speaker = 0; }
+void speakerOff() {
+    speaker = 0; 
+}
 
-void time_update(void const *argument) {
-  while (1) {
-
-    timeCount++;
-
-    lcd_mutex.lock();
-
-    uLCD.locate(14, 13);
-    uLCD.text_height(2);
-    uLCD.text_width(2);
-    if (20 <= timeCount && timeCount <= 30) {
-      uLCD.color(RED);
-    } else
-      uLCD.color(WHITE);
-
-    int timeremaining = 30 - timeCount;
-    uLCD.printf("%2.0d", timeremaining);
-    uLCD.text_height(1);
-    uLCD.text_width(1);
-    lcd_mutex.unlock();
-    Thread::wait(1000);
-  }
+void time_update(void const *argument) {    //Calculates time remaining and displays it
+    int timeremaining;
+    while (1) {
+        timeCount++;
+        timeremaining = 30 - timeCount;
+        lcd_mutex.lock();
+        uLCD.locate(14, 13);
+        if (timeremaining <= 10) uLCD.color(RED);        //Text is red when under 10 seconds
+        else uLCD.color(WHITE);
+        uLCD.text_height(2);
+        uLCD.text_width(2);
+        uLCD.printf("%2.0d", timeremaining);
+        uLCD.text_height(1);
+        uLCD.text_width(1);
+        lcd_mutex.unlock();
+        Thread::wait(1000);     // runs every second
+    }
 }
 
 void stat_calculation(void const *argument) {
-  while (1) {
-    currentWPM = ((double)word_count / timeCount) * 60;
-    currentAccuracy =
-        (double)100 * correctPresses / (correctPresses + incorrectPresses);
-    lcd_mutex.lock();
-    uLCD.locate(1, 12);
-    uLCD.color(BLUE);
-    uLCD.printf("WPM:%2.0f", currentWPM);
-    uLCD.locate(1, 14);
-    uLCD.printf("Acc:%2.0f %", currentAccuracy);
-    lcd_mutex.unlock();
-    Thread::wait(300);
-  }
+    while (1) {
+        currentWPM = ((double)word_count / timeCount) * 60;
+        currentAccuracy = (double)100 * correctPresses / (correctPresses + incorrectPresses);
+        lcd_mutex.lock();
+        uLCD.locate(1, 12);
+        uLCD.color(BLUE);
+        uLCD.printf("WPM:%2.0f", currentWPM);
+        uLCD.locate(1, 14);
+        uLCD.printf("Acc:%2.0f %", currentAccuracy);
+        lcd_mutex.unlock();
+        Thread::wait(300);
+    }
 }
 
-int typeLetter(bool right) {
-  if (user_input != '\0') {
-    lcd_mutex.lock();
-    if (right)
-      uLCD.color(GREEN);
-    else
-      uLCD.color(RED);
-    uLCD.locate(1 + userPos, 2);
-    uLCD.printf("%c", user_input);
-    uLCD.color(WHITE);
-    uLCD.printf("_");
-    lcd_mutex.unlock();
-  }
+int typeLetter(bool right) {    // type a letter red or green
+    if (user_input != '\0') {
+        lcd_mutex.lock();
+        if (right) uLCD.color(GREEN);
+        else uLCD.color(RED);
+        uLCD.locate(1 + userPos, 2);
+        uLCD.printf("%c", user_input);
+        uLCD.color(WHITE);
+        uLCD.printf("_");
+        lcd_mutex.unlock();
+    }
 }
 
 int redraw() {
-  lcd_mutex.lock();
-  uLCD.filled_rectangle(0, 0, 128, 80, BLACK);
-  uLCD.locate(1, 1);
-  uLCD.color(WHITE);
-  int i = 0;
-  while (random_string[currentIndex + i] !=
-         ' ') { // prints out letters of first word up next until the space
-    uLCD.printf("%c", random_string[currentIndex + i]);
+    lcd_mutex.lock();
+    uLCD.filled_rectangle(0, 0, 128, 80, BLACK);
+    uLCD.locate(1, 1);
+    uLCD.color(WHITE);
+    int i = 0;
+    while (random_string[currentIndex + i] != ' ') { // prints out letters of first word up next until the space
+        uLCD.printf("%c", random_string[currentIndex + i]);
+        i++;
+    }
+    i++; // start at the index of the next word
+    uLCD.locate(1, 4);
+    while (random_string[currentIndex + i] != ' ') { // prints out letters of second word up next until the space
+        uLCD.printf("%c", random_string[currentIndex + i]);
+        i++;
+    }
     i++;
-  }
-  i++; // start at the index of the next word
-  uLCD.locate(1, 4);
-  while (random_string[currentIndex + i] !=
-         ' ') { // prints out letters of second word up next until the space
-    uLCD.printf("%c", random_string[currentIndex + i]);
+    uLCD.locate(1, 6);
+    while (random_string[currentIndex + i] != ' ') { // prints out letters of third word up next until the space
+        uLCD.printf("%c", random_string[currentIndex + i]);
+        i++;
+    }
     i++;
-  }
-  i++;
-  uLCD.locate(1, 6);
-  while (random_string[currentIndex + i] !=
-         ' ') { // prints out letters of third word up next until the space
-    uLCD.printf("%c", random_string[currentIndex + i]);
-    i++;
-  }
-  i++;
-  uLCD.locate(1, 8);
-  while (random_string[currentIndex + i] !=
-         ' ') { // prints out letters of fourth word up next until the space
-    uLCD.printf("%c", random_string[currentIndex + i]);
-    i++;
-  }
-  uLCD.locate(1, 2);
-  uLCD.printf("_");
-  lcd_mutex.unlock();
+    uLCD.locate(1, 8);
+    while (random_string[currentIndex + i] != ' ') { // prints out letters of fourth word up next until the space
+        uLCD.printf("%c", random_string[currentIndex + i]);
+        i++;
+    }
+    uLCD.locate(1, 2);
+    uLCD.printf("_");    // draw cursor
+    lcd_mutex.unlock();
 }
-// void addToPlayerString(char c);
 
 int main() {
-
-//initialization
-  speaker.write(0);
-  speaker.period(1.0 / 100.0);
-  PS2Keyboard::keyboard_event_t evt_kb; // Setup keyboard interrupt
-  int temp = 0;
-  bool error = false;
-  uLCD.baudrate(3000000);
-  uLCD.cls();
-
-  //////////////////////
-  // RANDOM STRING
-  ///////////////////
-  // Set the random seed
-  int seed = noise.read_u16();
-  srand(seed);
-  // Generate a random string from the word bank
-
-  // Generate a random sequence of words from the word bank
-  int i, j, random_word_index;
-  for (i = 0; i < NUM_WORDS; i++) {
-    random_word_index = rand() % NUM_WORDS;
-    strncat(random_string, word_bank[random_word_index % NUM_WORDS], MAX_WORD_LEN);
-    strcat(random_string, " ");
-  }
-  random_string[strlen(random_string) - 1] = '\0';
-//   pc.printf("\n\n");
-  // Print the random string
-//   pc.printf("Random string: %s", random_string);
-
-//   pc.printf("%d", seed);
-  redraw();
-  uLCD.line(5, 85, 123, 85, WHITE);
-  Thread timeUpdate(time_update);
-  Thread statCalc(stat_calculation);
-  while (timeCount <= 30) {
-    if (ps2kb.processing(&evt_kb)) { // Executes if a key is pressed
-      temp = evt_kb.scancode[0];
-      for (int i = 1; i < evt_kb.length;
-           i++) { // Parse keyboard input into a key
-        temp <<= 4;
-        temp |= evt_kb.scancode[i];
-      }
-      if (temp < 100) {
-        // pc.printf("%c", charMap[temp]);
-        user_input =
-            charMap[temp]; // Read in a single character from standard input
-        // pc.printf("\n charmap: %c \t", charMap[temp]);
-        // pc.printf("current letter: %c \t", random_string[currentIndex]);
-        // pc.printf("current index: %d\t", currentIndex);
-
-        if (random_string[currentIndex] != ' ') { // if space is not needed
-          if (user_input == ' ' ||
-              user_input == '\n') { // if space or enter is typed
-            while (random_string[currentIndex] !=
-                   ' ') { // increment currentIndex until next word
-              currentIndex++;
-            }
-            currentIndex++; // Add one more to get to the beginning of the next
-                            // word
-            redraw();
-            userPos = 0;
-            error = false;
-            incorrectPresses++;
-            speaker = 0.5;
-            delay.attach(&speakerOff, 1);
-          } else if (userPos <= 13) { // if it isn't space or enter and you
-                                      // aren't at the end of the line
-            if (random_string[currentIndex] ==
-                user_input) { // if correct character is typed
-              correctPresses++;
-              typeLetter(true);
-            //   pc.printf("Correct press! # of presses %d \t", correctPresses);
-            } else { // if wrong character is typed
-              incorrectPresses++;
-              typeLetter(false);
-              error = true;
-            //   pc.printf("Incorrect press! # of presses %d \t",
-                        // incorrectPresses);
-              speaker.write(0.5);
-              delay.attach(&speakerOff, 1);
-            }
-            currentIndex++;
-            userPos++;
-          }
-        }
-
-        else {
-          if (((user_input == ' ') ||
-               (user_input == '\n'))) { // if space is needed and typed
-            if (!error) {
-              word_count++; // if word is all right, add to word count
-            //   pc.printf("correct word typed!!");
-            }
-            error = false;
-            // pc.printf("space matched!\t");
-            currentIndex++;
-            correctPresses++;
-            userPos = 0;
-            redraw();
-          } else { // if space is needed and other letter is typed
-            if (userPos <= 13) {
-              typeLetter(false);
-              incorrectPresses++;
-              userPos++;
-              speaker.write(0.3);
-              delay.attach(&speakerOff, 0.5);
-            }
-          }
-        }
-      }
-
-      Thread::wait(10);
+    //initialization
+    speaker.write(0);
+    speaker.period(1.0 / 100.0);
+    PS2Keyboard::keyboard_event_t evt_kb; // Setup keyboard interrupt
+    int temp = 0;
+    bool error = false;
+    uLCD.baudrate(3000000);
+    uLCD.cls();
+    // Generate random string
+    int seed = noise.read_u16();
+    srand(seed);
+    // Generate a random string from the word bank
+    int i, j, random_word_index;
+    for (i = 0; i < NUM_WORDS; i++) {
+        random_word_index = rand() % NUM_WORDS;
+        strncat(random_string, word_bank[random_word_index % NUM_WORDS], MAX_WORD_LEN);
+        strcat(random_string, " ");
     }
-  }
+    random_string[strlen(random_string) - 1] = '\0';
+
+    redraw();
+    uLCD.line(5, 85, 123, 85, WHITE);
+    Thread timeUpdate(time_update);
+    Thread statCalc(stat_calculation);
+    while (timeCount <= 30) {
+        if (ps2kb.processing(&evt_kb)) { // Executes if a key is pressed
+            temp = evt_kb.scancode[0];
+            for (int i = 1; i < evt_kb.length; i++) { // Parse keyboard input into a key
+                temp <<= 4;
+                temp |= evt_kb.scancode[i];
+            }
+            if (temp < 100) {
+                user_input = charMap[temp]; // Read in a single character from standard input
+                if (random_string[currentIndex] != ' ') { // if space is not needed
+                    if (user_input == ' ' || user_input == '\n') { // if space or enter is typed
+                        while (random_string[currentIndex] != ' ') currentIndex++; // increment currentIndex until next word
+                        currentIndex++; // Add one more to get to the beginning of the next // word
+                        redraw();
+                        userPos = 0;
+                        error = false;
+                        incorrectPresses++;
+                        speaker = 0.5;
+                        delay.attach(&speakerOff, 1);
+                    } 
+                    else if (userPos <= 13) { // if it isn't space or enter and you aren't at the end of the line
+                        if (random_string[currentIndex] == user_input) { // if correct character is typed
+                                correctPresses++;
+                            typeLetter(true);
+                        } 
+                        else { // if wrong character is typed
+                            incorrectPresses++;
+                            typeLetter(false);
+                            error = true;  // Raise error flag so word is not counted towards word count
+                            speaker.write(0.5);
+                            delay.attach(&speakerOff, 1);
+                        }
+                        currentIndex++;
+                        userPos++;
+                    }
+                }
+                else {
+                    if (((user_input == ' ') || (user_input == '\n'))) { // if space is needed and typed
+                        if (!error) word_count++; // if word is correct, add to word count
+                        error = false;
+                        currentIndex++;
+                        correctPresses++;
+                        userPos = 0;
+                        redraw();
+                    } 
+                    else { // if space is needed and other letter is typed
+                        if (userPos <= 13) {
+                            typeLetter(false);
+                            incorrectPresses++;
+                            userPos++;
+                            speaker.write(0.3);
+                            delay.attach(&speakerOff, 0.5);
+                        }
+                    }
+                }
+            }
+            Thread::wait(10);
+        }
+    }
 //End of Game Screen
-//   pc.printf("done");
   lcd_mutex.lock();
   uLCD.cls();
   uLCD.text_height(1);
@@ -399,11 +350,9 @@ int main() {
   uLCD.printf("WPM:%3.0f", currentWPM);
   lcd_mutex.unlock();
 
-  statCalc.terminate(); //terminates threads
+  statCalc.terminate(); //terminate threads
   timeUpdate.terminate();
-
-  
-//END OF GAME RHYTHM
+    //end of game jingle
   speaker.period(0.5/261.6);
 
   speaker=0.5;
@@ -450,6 +399,4 @@ int main() {
   wait(0.2);
   speaker=0;
   wait(0.1);
-//   pc.printf("more done");
-    
 }
