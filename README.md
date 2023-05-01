@@ -69,7 +69,7 @@ Note: PS/2 connector pin wiring begins at the top right pin, which is p1, travel
 
 
 ## System Schematic
-<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/ECE%204180%20Final%20Schematic.png" width="841" height="658">
+<img src="https://github.com/ranroun3/ECE4180_FinalProject_Spring23/blob/main/Schematic.png" width="851" height="625">
 
 ## Game Operation
 Upon booting up the game, our user is presented with a list of words to type, alongside a 30-second timer. These words are generated from a list of the 500 most commonly used words in the English Language. 
