@@ -16,8 +16,11 @@ Creators: Rony Stephan, Andrew Wang
 
 
 ## Project Motivation
+For this project, we really enjoyed learning about the ability of the MBED to emulate and recieve user input. We wanted to focus on something that put MBED's ability to parse user input to the test, by creating a type racing game. Inspired by the popular [Monkeytype](https://monkeytype.com/), we wanted to create an MBED type racing game. Our game models Monkeytype closely, but includes many Mbed-specific implementation details to bring the game to life on such a low-power device.
+
 
 ## Final Showcase
+Our game models this game closely, beginning with a 30 second timer, and giving the user random words to type. Our words are generated from a list of the 500 most commonly used words in the english language. 
 
 ## Electronic Components
  - uLCD-144-g2: https://www.sparkfun.com/products/11377
