@@ -45,14 +45,15 @@ Creators: Rony Stephan, Andrew Wang
 | RX | p10|
 | RST| p11|
 
-**MBED and Audio Amp/Speaker **
-|Amp |Mbed|Speaker  |
+**MBED, TPA2005D1 Amp, and Speaker **
+|MBED|TPA|  Speaker |
 |--- | ---| ---     |
-| 5V |    |   5V    |
-| GND|    |  GND    |
-| TX | p9 |         |
-| RX | p10|         |
-| RST| p11|         |
+| 5V |PWR+|         |
+| GND|PWR-|         |
+| p26| in+|         |
+| GND| in-|         |
+|    |out+|    +    |
+|    |out-|    -   |
 
 
 
